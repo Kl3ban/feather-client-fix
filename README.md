@@ -1,49 +1,29 @@
-﻿# Feather Client - Dawn Bypass & Microsoft Login Fix
+# Feather Client Fix (Dawn bypass & MS login fix)
 
-Automatyczny skrypt i przewodnik naprawiający **Feather Client** po jego przejęciu i próbie wymuszenia migracji na **Dawn Client**.
+after inpvp took over feather they started force updating everyone to dawn client and broke the dns for the old launcher (`game-launcher.feathermc.com`), causing `os error 11001` / unknown host during microsoft login.
 
----
+this script blocks the dawn update and fixes the login so you can keep using feather client normally.
 
-## 🛑 Problemy, które rozwiązuje ten projekt:
-1. **Wymuszona aktualizacja do Dawn Client:** Feather Launcher pobierał w tle instalator `dawn-installer_*.exe` z `launcher.feathercdn.net` i podmieniał stary launcher na Dawn Clienta.
-2. **Błąd autoryzacji MS i pobierania wersji:**
-   ```text
-   Autoryzacja MS nie powiodła się: couldn't download from url https://game-launcher.feathermc.com/release/version_index.json
-   Caused by: client error (Connect) / dns error: Nieznany host (os error 11001)
-   ```
-   Nowi właściciele usunęli publiczny rekord DNS dla subdomeny `game-launcher.feathermc.com`. Jednak oryginalny serwer Cloudflare z wersjami i manifestami **wciąż działa pod adresem IP `104.26.11.70`**.
+## Quick fix (automatic)
+1. download `fix-feather.bat`
+2. right click and run as administrator (or just double click and accept the uac prompt)
+3. open feather client and log in. thats it.
 
----
+## Manual fix (if you dont want to run scripts)
+if you prefer doing it youreself:
+1. open notepad as admin
+2. open `C:\Windows\System32\drivers\etc\hosts`
+3. add these two lines at the bottom:
+```
+127.0.0.1 launcher.feathercdn.net
+104.26.11.70 game-launcher.feathermc.com
+```
+4. save the file.
+5. open cmd and run `ipconfig /flushdns`
+6. delete the folder `%localappdata%\feather-updater` if it exists
+7. go to `C:\Program Files\Feather Launcher\resources` and rename `app-update.yml` to `app-update.yml.bak`
 
-## 🚀 Jak użyć (automatycznie):
-1. Pobierz plik [`fix-feather.bat`](fix-feather.bat).
-2. Kliknij na niego prawym przyciskiem myszy i wybierz **Uruchom jako administrator** (skrypt sam poprosi o uprawnienia, jeśli o tym zapomnisz).
-3. Uruchom Feather Launchera i zaloguj się swoim kontem Microsoft. Wszystko powinno działać!
-
----
-
-## 🛠️ Jak to działa (ręczna naprawa):
-Jeśli wolisz zrobić to ręcznie:
-1. **Zablokowanie Dawn Client:**
-   Otwórz plik `C:\Windows\System32\drivers\etc\hosts` jako Administrator i dodaj na końcu:
-   ```text
-   127.0.0.1 launcher.feathercdn.net
-   ```
-2. **Naprawa pobierania wersji (DNS Fix):**
-   W tym samym pliku `hosts` dodaj wpis kierujący na działający serwer Cloudflare:
-   ```text
-   104.26.11.70 game-launcher.feathermc.com
-   ```
-3. **Wyczyszczenie cache:**
-   * W wierszu poleceń (cmd): `ipconfig /flushdns`
-   * Usuń folder `%LOCALAPPDATA%\feather-updater`
-   * Zmień nazwę pliku `C:\Program Files\Feather Launcher\resources\app-update.yml` na `app-update.yml.bak`
-
----
-
-## English Summary
-Following the acquisition and rebrand of Feather Client into Dawn Client, users attempting to stay on Feather experience forced updates to Dawn and DNS resolution errors (`os error 11001`) when attempting to authenticate via Microsoft account because `game-launcher.feathermc.com` DNS records were altered.
-Run [`fix-feather.bat`](fix-feather.bat) as Administrator to automatically:
-* Block `launcher.feathercdn.net` to prevent Dawn auto-update.
-* Point `game-launcher.feathermc.com` to the operational Cloudflare IP `104.26.11.70`.
-* Flush the DNS cache and clean up updater artifacts.
+## How it works
+- `launcher.feathercdn.net` is pointed to 127.0.0.1 so the launcher cant reach the server that downloads dawn client.
+- `game-launcher.feathermc.com` dns was deleted by devs, but the cloudflare server with the version files is still up at `104.26.11.70`. adding this to hosts fixes `version_index.json` downloading and microsoft auth.
+- removes the updater cache and renames `app-update.yml` so electron stops looking for updates completely.
