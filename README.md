@@ -1,4 +1,4 @@
-# Feather Client - Dawn Bypass & Microsoft Login Fix
+﻿# Feather Client - Dawn Bypass & Microsoft Login Fix
 
 Automatyczny skrypt i przewodnik naprawiający **Feather Client** po jego przejęciu i próbie wymuszenia migracji na **Dawn Client**.
 

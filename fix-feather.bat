@@ -17,7 +17,7 @@ echo.
 
 set "HOSTS_FILE=%SystemRoot%\System32\drivers\etc\hosts"
 
-:: Zdjęcie atrybutu tylko do odczytu z pliku hosts (jeśli istnieje)
+:: Zdjecie atrybutu tylko do odczytu z pliku hosts (jesli istnieje)
 attrib -R "%HOSTS_FILE%" >nul 2>&1
 
 :: 1. Blokada auto-update do Dawn Client
