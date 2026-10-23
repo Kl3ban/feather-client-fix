@@ -1,29 +1,32 @@
-# Feather Client Fix (Dawn bypass & MS login fix)
+# Feather Client Fix (Dawn bypass & MS login / Error 522 fix)
 
-after inpvp took over feather they started force updating everyone to dawn client and broke the dns for the old launcher (`game-launcher.feathermc.com`), causing `os error 11001` / unknown host during microsoft login.
+after inpvp took over feather they started force updating everyone to dawn client, broke the dns for the old launcher (`game-launcher.feathermc.com`), and the in-game webapp server went down with cloudflare error 522 (`mc-webapp.feathermc.com`).
 
-this script blocks the dawn update and fixes the login so you can keep using feather client normally.
+this fix stops the dawn update, fixes microsoft login, and patches the in-game menu so you can keep playing any minecraft version on feather client.
 
 ## Quick fix (automatic)
-1. download `fix-feather.bat`
-2. right click and run as administrator (or just double click and accept the uac prompt)
-3. open feather client and log in. thats it.
+1. download this repo (or grab `fix-feather.bat` and `feather-agent.jar` together in the same folder).
+2. run `fix-feather.bat` as administrator.
+3. open feather client, log in and hit play.
+
+## What it fixes
+1. **Dawn Client forced update:** blocks `launcher.feathercdn.net` to 127.0.0.1 and cleans updater cache so dawn never downloads.
+2. **Microsoft login / os error 11001:** `game-launcher.feathermc.com` dns was deleted, but the working cloudflare server is still up at `104.26.11.70`. adding this to hosts fixes `version_index.json` downloading.
+3. **In-game menu Error 522 (Cloudflare timed out):** feather loads its in-game gui from `https://mc-webapp.feathermc.com/` which is currently dead. `feather-agent.jar` redirects it in memory to the working `beta.mc-webapp.feathermc.com` server on all mc versions (1.8.9, 1.12.2, 1.20.x, 1.21.x, etc.) without modifying any jar files on disk.
 
 ## Manual fix (if you dont want to run scripts)
-if you prefer doing it youreself:
-1. open notepad as admin
-2. open `C:\Windows\System32\drivers\etc\hosts`
-3. add these two lines at the bottom:
+if you want to do it youreself:
+1. open notepad as admin, open `C:\Windows\System32\drivers\etc\hosts`
+2. add these lines at the bottom:
 ```
 127.0.0.1 launcher.feathercdn.net
 104.26.11.70 game-launcher.feathermc.com
 ```
-4. save the file.
-5. open cmd and run `ipconfig /flushdns`
-6. delete the folder `%localappdata%\feather-updater` if it exists
-7. go to `C:\Program Files\Feather Launcher\resources` and rename `app-update.yml` to `app-update.yml.bak`
-
-## How it works
-- `launcher.feathercdn.net` is pointed to 127.0.0.1 so the launcher cant reach the server that downloads dawn client.
-- `game-launcher.feathermc.com` dns was deleted by devs, but the cloudflare server with the version files is still up at `104.26.11.70`. adding this to hosts fixes `version_index.json` downloading and microsoft auth.
-- removes the updater cache and renames `app-update.yml` so electron stops looking for updates completely.
+3. save the file, open cmd and run `ipconfig /flushdns`
+4. delete the folder `%localappdata%\feather-updater`
+5. go to `C:\Program Files\Feather Launcher\resources` and rename `app-update.yml` to `app-update.yml.bak`
+6. put `feather-agent.jar` inside `%appdata%\.feather\agent\`
+7. in `%appdata%\.feather\settings.json`, add:
+```json
+"jwmArgs": "-javaagent:C:/Users/YOUR_USERNAME/AppData/Roaming/.feather/agent/feather-agent.jar"
+```

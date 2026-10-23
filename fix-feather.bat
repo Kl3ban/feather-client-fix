@@ -65,6 +65,14 @@ if exist "%FEATHER_INSTALL_DIR%\resources\app-update.yml" (
     ren "%FEATHER_INSTALL_DIR%\resources\app-update.yml" "app-update.yml.bak" >nul 2>&1
 )
 
+:: 6. Install Java agent to fix Error 522 in-game menu across all MC versions
+if exist "%~dp0feather-agent.jar" (
+    echo [*] Installing in-game UI agent for all MC versions...
+    if not exist "%APPDATA%\.feather\agent" mkdir "%APPDATA%\.feather\agent" >nul 2>&1
+    copy /Y "%~dp0feather-agent.jar" "%APPDATA%\.feather\agent\feather-agent.jar" >nul 2>&1
+    powershell -NoProfile -Command "$p = \"$env:APPDATA\.feather\settings.json\"; if (Test-Path $p) { $c = Get-Content $p | ConvertFrom-Json; $c | Add-Member -Name 'jwmArgs' -Value ('-javaagent:' + $env:APPDATA.Replace('\','/') + '/.feather/agent/feather-agent.jar') -MemberType NoteProperty -Force; $c | ConvertTo-Json -Compress | Set-Content $p -NoNewline }" >nul 2>&1
+)
+
 echo.
 echo ========================================================
 echo   Done! Feather Client is fixed.
