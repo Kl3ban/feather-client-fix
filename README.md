@@ -8,6 +8,10 @@ this fixes microsoft login, blocks forced dawn update and patches the in-game me
 ![Mod Menu](screenshots/mod_menu.png)
 ![In Game](screenshots/in_game.png)
 
+## Where to get Feather Launcher
+if you dont have feather client installed yet or deleted it, the original installer is still archived here:
+https://featherclient.pl/strona-pobierania/
+
 ## How to use (quick way)
 1. download this repo (or just grab `fix-feather.bat` and `feather-fix-522.jar` in the same folder).
 2. right click `fix-feather.bat` and run as administrator.
